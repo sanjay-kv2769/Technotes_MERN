@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password").lean();
-  if (!users) {
+  if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }
   res.json(users);
@@ -42,7 +42,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
   if (user) {
     //created
-    res.status(201).json({ message: `New User ${username} created` });
+    res.status(201).json({ message: `New user ${username} created` });
   } else {
     res.status(400).json({ message: "Invalid user data received" });
   }
@@ -66,6 +66,7 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "All field are required" });
   }
 
+   // Does the user exist to update?
   const user = await User.findById(id).exec();
   if (!user) {
     res.status(400).json({ message: "User not found" });
@@ -88,7 +89,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const updatedUser = await user.save();
 
-  res.json({ message: `${updatedUser.username}updated` });
+  res.json({ message: `${updatedUser.username} updated` });
 });
 
 // @desc Delete a user
@@ -101,8 +102,8 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (!id) {
     return res.status(400).json({ message: "User ID Required" });
   }
-  const notes = await Note.findOne({ user: id }).lean().exex();
-  if (notes?.length) {
+  const note = await Note.findOne({ user: id }).lean().exex();
+  if (note) {
     return res.status(400).json({ message: "User has assigned notes" });
   }
 
@@ -112,8 +113,8 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
   const result = await user.deleteOne();
 
-  const reply = `Username ${result.username} with ID ${result._id} deleted`
-  res.json(reply)
+  const reply = `Username ${result.username} with ID ${result._id} deleted`;
+  res.json(reply);
 });
 
 module.exports = {
