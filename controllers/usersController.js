@@ -66,7 +66,7 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "All field are required" });
   }
 
-   // Does the user exist to update?
+  // Does the user exist to update?
   const user = await User.findById(id).exec();
   if (!user) {
     res.status(400).json({ message: "User not found" });
@@ -102,14 +102,14 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (!id) {
     return res.status(400).json({ message: "User ID Required" });
   }
-  const note = await Note.findOne({ user: id }).lean().exex();
+  const note = await Note.findOne({ user: id }).lean().exec();
   if (note) {
     return res.status(400).json({ message: "User has assigned notes" });
   }
 
   const user = await User.findById(id).exec();
   if (!user) {
-    return res.status(400).json({ message: "user not found" });
+    return res.status(400).json({ message: "User not found" });
   }
   const result = await user.deleteOne();
 
